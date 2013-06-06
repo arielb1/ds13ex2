@@ -5,6 +5,51 @@
  */
 public class BinomialHeap
 {
+	static class BinomialTree {
+		// mid is only important if left == right == null
+		BinomialTree next;
+		BinomialTree child;
+		int min;
+		
+		BinomialTree(BinomialTree next, BinomialTree child) {
+			this.next = next;
+			this.min = next.min;
+			assert(next.min <= child.min);
+			this.child = child;
+		}
+		
+		BinomialTree(int mid) {
+			this.next = this.child = null;
+			this.min = mid;
+		}
+	}
+	
+	static class LinkedList {
+		int size;
+		BinomialTree tree;
+		LinkedList next;
+		
+		LinkedList(BinomialTree tree, int size, LinkedList next) {
+			this.size = size;
+			this.tree = tree;
+		}
+	}
+	
+	static class Tree {
+		Tree left;
+		LinkedList center;
+		Tree right;
+		
+		Tree(Tree left, LinkedList center, Tree right) {
+			this.left = left;
+			this.center = center;
+			this.right = right;
+		}
+	}
+	
+	LinkedList list;
+	Tree tree;
+	int size;
 
    /**
     * public boolean empty()
