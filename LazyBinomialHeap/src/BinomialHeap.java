@@ -5,16 +5,12 @@
  */
 public class BinomialHeap
 {
-	LinkedList list;
-	Tree tree;
-	int size;
-	BinomialTree min;
+	private LinkedList list;
+	private Tree tree;
+	private int size;
+	private int count_links;
 	
-	BinomialHeap(LinkedList list, Tree tree){
-		this.list=list;
-		this.tree=tree;
-	}
-	static class BinomialTree {
+	private static class BinomialTree {
 		// mid is only important if left == right == null
 		BinomialTree next;
 		BinomialTree child;
@@ -33,19 +29,20 @@ public class BinomialHeap
 		}
 	}
 	
-	static class LinkedList {
-		int size;
+	private static class LinkedList {
+		int degree;
 		BinomialTree tree;
 		LinkedList next;
 		
-		LinkedList(BinomialTree tree, int size, LinkedList next) {
-			this.size = size;
+		LinkedList(BinomialTree tree, int degree, LinkedList next) {
+			// degree should be tree's degree
+			this.degree = degree;
 			this.tree = tree;
 			this.next=next;//changed
 		}
 	}
 	
-	static class Tree {
+	private static class Tree {
 		Tree left;
 		LinkedList center;
 		Tree right;
@@ -70,10 +67,7 @@ public class BinomialHeap
     */
     public boolean empty()
     {
-    	if(min.value==null){
-    		return true;
-    	}
-    	return false; // should be replaced by student code
+   		return size == 0;
     }
 
    /**
@@ -82,7 +76,7 @@ public class BinomialHeap
     * Insert value into the heap
     *
     */
-    public void insert(int value)
+    public void insert(int value)//mor
     {
     	return; // should be replaced by student code
     }
@@ -94,7 +88,7 @@ public class BinomialHeap
     * Return the number of linking actions that occured in the process.
     *
     */
-    public int deleteMin()
+    public int deleteMin()//ariel
     {
      	return 42; // should be replaced by student code
     }
@@ -105,7 +99,7 @@ public class BinomialHeap
     * Return the minimum value
     *
     */
-    public int findMin()
+    public int findMin()//mor
     {
     	return 42;// should be replaced by student code
     }
@@ -116,7 +110,7 @@ public class BinomialHeap
     * Meld the heap with heap2
     *
     */
-    public void meld (BinomialHeap heap2)
+    public void meld (BinomialHeap heap2)//mor
     {
     	  return; // should be replaced by student code
     }
@@ -129,7 +123,7 @@ public class BinomialHeap
     */
     public int size()
     {
-    	return 42; // should be replaced by student code
+    	return size;
     }
 
 
@@ -137,10 +131,10 @@ public class BinomialHeap
     * public static int sortArray(int[] array)
     *
     * Sort an array by using insert and deleteMin actions on a new heap.
-    * Return the number of linking actions that occured in the process.
+    * Return the number of linking actions that occurred in the process.
     *
     */
-    public static int sortArray(int[] array)
+    public static int sortArray(int[] array)//mor
     {
         return 42; //	 to be replaced by student code
     }
@@ -152,22 +146,10 @@ public class BinomialHeap
     * in ascending order.
     *
     */
-    public int[] treesRanks()
+    public int[] treesRanks()//ariel
     {
         int[] arr = new int[42]; //
         return arr; //	 to be replaced by student code
-    }
-
-   /**
-    * public class BinomialHeapTree
-    *
-    * If you wish to implement classes other than BinomialHeap
-    * (for example BinomialHeapTree), do it in this file, not in
-    * another file
-    *
-    */
-    public class BinomialHeapTree{
-
     }
 
 }
