@@ -1,4 +1,5 @@
 /**
+
  * BinomialHeap
  *
  * An implementation of lazy binomial heap over non-negative integers.
@@ -9,7 +10,8 @@ public class BinomialHeap
 	private Tree tree;
 	private int size;
 	private int count_links;
-	
+        private int tree_depth;
+
 	private static class BinomialTree {
 		// mid is only important if left == right == null
 		BinomialTree next;
@@ -128,8 +130,31 @@ public class BinomialHeap
     }
 
     private int link_tree(BinomialTree[] target, Tree tree) {
-        if(tree == null) return 0;
-        return 0; // TODO: make it work
+        if(tree == null) return;
+        // I don't want to do stack-recursion here - may overflow
+        Tree[] stack = new Tree[tree_depth];
+        int tree_idx = 0;
+        int link_count = 0;
+        stack[tree_idx] = tree;
+        while(stack[tree_idx].left != null) {
+            stack[tree_idx+1] = stack[tree_idx].left;
+            tree_idx++;
+        }
+        
+        while(true) {
+            link_count += link_list(target, stack[tree_idx].center);
+
+            if(stack[tree_idx].right != null) {
+                stack[tree_idx] = stack[tree_idx].right;
+                while(stack[tree_idx].left != null) {
+                    stack[tree_idx+1] = stack[tree_idx].left;
+                    tree_idx++;
+                }
+            } else if(tree_idx == 0)
+                return link_count;
+            else
+                tree_idx--;
+        }
     }
 
     private LinkedList collect_target(BinomialTree[] target) {
@@ -148,6 +173,10 @@ public class BinomialHeap
                 min_deg = deg;
             } else tree = new LinkedList(tree, deg, list);
         }
+
+        if(min_tree != null)
+            tree = new LinkedList(min_tree, min_deg, list);
+
         return list;
     }
 
