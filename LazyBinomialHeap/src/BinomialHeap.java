@@ -90,9 +90,51 @@ public class BinomialHeap
     */
     public int deleteMin()//ariel
     {
-     	return 42; // should be replaced by student code
+        int max_deg = 0;
+        int link_count = 0;
+        size--;
+        for(int s=size;s>0;s = s >> 2) max_deg++;
+        BinomialTree[] target = new BinomialTree[max_deg];
+        
+        BinomialTree cur = list.tree;
+        for(int deg=tree.degree;deg>0;deg--,cur=cur.next)
+            target[deg-1] = cur.child;
+
+        list = list.next;
+        link_count += link_list(target, list);
+        link_count += link_tree(target, tree);
+        tree = null;
+        list = collect_target(target);
+     	return link_count;
     }
 
+    private int link_list(BinomialTree[] target, LinkedList list) {
+        int link_count = 0;
+
+        while(list != null) {
+            if(target[list.degree] == null)
+                target[list.degree] = list.tree;
+            else {
+                link_count++;
+                target[list.degree] = (list.tree.value >
+                                       target[list.degree].value) ?
+                      new BinomialTree(target[list.degree], list.tree)
+                    : new BinomialTree(list.tree, target[list.degree]);
+            }
+            list = list.next;
+        }
+
+        return link_count;
+    }
+
+    private int link_tree(BinomialTree[] target, Tree tree) {
+        if(tree == null) return 0;
+        return 0; // TODO: make it work
+    }
+
+    private LinkedList collect_target(BinomialTree[] target) {
+        return null; // TODO: make method work
+    }
    /**
     * public int findMin()
     *
