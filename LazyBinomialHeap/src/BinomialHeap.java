@@ -133,8 +133,24 @@ public class BinomialHeap
     }
 
     private LinkedList collect_target(BinomialTree[] target) {
-        return null; // TODO: make method work
+        BinomialTree min_tree = null;
+        int min_deg = -1;
+        LinkedList list = null;
+        for(int deg=0;deg<target.length;deg++) {
+            BinomialTree t = target[deg];
+            if(t == null) continue;
+            if(min_tree == null) {
+                min_tree = t;
+                min_deg = deg;
+            } else if(t.value < min_tree.value) {
+                list = new LinkedList(min_tree, min_deg, list);
+                min_tree = t;
+                min_deg = deg;
+            } else tree = new LinkedList(tree, deg, list);
+        }
+        return list;
     }
+
    /**
     * public int findMin()
     *
