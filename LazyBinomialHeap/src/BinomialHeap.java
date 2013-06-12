@@ -17,8 +17,8 @@ public class BinomialHeap
 		int value;
 		
 		BinomialTree(BinomialTree next, BinomialTree child) {
-			this.next = next;
-			this.value = next.value;
+                        this.next = next.next == null ? null : next;
+		        this.value = next.value;
 			assert(next.value <= child.value);
 			this.child = child;
 		}
