@@ -109,11 +109,13 @@ public class BinomialHeap
         BinomialTree cur = list.tree;
         for(int deg=tree.degree;deg>0;deg--,cur=cur.next)
             target[deg-1] = cur.child;
+        assert(cur == null);
 
-        list = list.next;
-        link_count += link_list(target, list);
+        link_count += link_list(target, list.next);
         link_count += link_tree(target, tree);
+
         tree = null;
+        tree_depth = 0;
         list = collect_target(target);
      	return link_count;
     }
@@ -138,7 +140,7 @@ public class BinomialHeap
     }
 
     private int link_tree(BinomialTree[] target, Tree tree) {
-        if(tree == null) return;
+        if(tree == null) return 0;
         // I don't want to do stack-recursion here - may overflow
         Tree[] stack = new Tree[tree_depth];
         int tree_idx = 0;
@@ -179,11 +181,11 @@ public class BinomialHeap
                 list = new LinkedList(min_tree, min_deg, list);
                 min_tree = t;
                 min_deg = deg;
-            } else tree = new LinkedList(tree, deg, list);
+            } else list = new LinkedList(tree, deg, list);
         }
 
         if(min_tree != null)
-            tree = new LinkedList(min_tree, min_deg, list);
+            list = new LinkedList(min_tree, min_deg, list);
 
         return list;
     }
