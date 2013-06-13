@@ -10,7 +10,7 @@ public class BinomialHeap
 	private Tree tree;
 	private int size;
 	private int count_links;
-        private int tree_depth;
+    private int tree_depth;
 
 	private static class BinomialTree {
 		// mid is only important if left == right == null
@@ -196,7 +196,7 @@ public class BinomialHeap
     */
     public int findMin()//mor
     {
-    	return 42;// should be replaced by student code
+    	return list.tree.value;
     }
 
    /**
@@ -205,9 +205,16 @@ public class BinomialHeap
     * Meld the heap with heap2
     *
     */
-    public void meld (BinomialHeap heap2)//mor
+    public void meld (BinomialHeap heap2)//mor-heap2 supposse to be unvalid after meld+tree_depth
     {
-    	  return; // should be replaced by student code
+    	if(heap2.list.tree.value<list.tree.value){
+    		list=new LinkedList(heap2.list.tree,heap2.list.degree,list);
+    		BinomialTree t=heap2.list.next.tree;
+    		heap2.list=new LinkedList(t,heap2.list.next.degree,heap2.list.next.next);
+    	}
+    	tree=new Tree(tree,heap2.list,heap2.tree);
+    	tree_depth++;
+    	size+=heap2.size;
     }
 
    /**
@@ -231,6 +238,10 @@ public class BinomialHeap
     */
     public static int sortArray(int[] array)//mor
     {
+    	Binomialheap 
+    	for(int i=0;i<array.length;i++){
+    		
+    	}
         return 42; //	 to be replaced by student code
     }
 
