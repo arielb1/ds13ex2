@@ -30,7 +30,7 @@ public class BinomialHeap
 	}
 	
 	private static class LinkedList {
-		int degree;
+		int degree;//tree's degree
 		BinomialTree tree;
 		LinkedList next;
 		
@@ -78,7 +78,15 @@ public class BinomialHeap
     */
     public void insert(int value)//mor
     {
-    	return; // should be replaced by student code
+    	BinomialTree t=new BinomialTree(value);
+    	if (list.tree.value> value){
+    		list = new LinkedList(t,0,list);
+    	}
+    	else{
+    		LinkedList l=new LinkedList(t,0,list.next);
+    		list=new LinkedList(list.tree,list.degree,l);
+    	}
+    	size++;
     }
 
    /**
