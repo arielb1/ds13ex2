@@ -184,31 +184,14 @@ public class BinomialHeap
     }
 
     private int link_tree(BinomialTree[] target, Tree tree) {
-        if(tree == null) return 0;
-        // I don't want to do stack-recursion here - may overflow
-        Tree[] stack = new Tree[tree_depth];
-        int tree_idx = 0;
         int link_count = 0;
-        stack[tree_idx] = tree;
-        while(stack[tree_idx].left != null) {
-            stack[tree_idx+1] = stack[tree_idx].left;
-            tree_idx++;
-        }
-        
-        while(true) {
-            link_count += link_list(target, stack[tree_idx].center);
 
-            if(stack[tree_idx].right != null) {
-                stack[tree_idx] = stack[tree_idx].right;
-                while(stack[tree_idx].left != null) {
-                    stack[tree_idx+1] = stack[tree_idx].left;
-                    tree_idx++;
-                }
-            } else if(tree_idx == 0)
-                return link_count;
-            else
-                tree_idx--;
+        for(Tree cur = tree; cur != null; cur = cur.right) {
+            link_count += link_tree(target, cur.left);
+            link_count += link_list(target, cur.list);
         }
+
+        return link_count;
     }
 
     private LinkedList collect_target(BinomialTree[] target) {
