@@ -188,7 +188,7 @@ public class BinomialHeap
 
         for(Tree cur = tree; cur != null; cur = cur.right) {
             link_count += link_tree(target, cur.left);
-            link_count += link_list(target, cur.list);
+            link_count += link_list(target, cur.center);
         }
 
         return link_count;
@@ -242,10 +242,8 @@ public class BinomialHeap
     {
         // A few base cases to avoid tree-node proliferation and the
         //     resulting complexity increase
-
     	if(heap2.empty())
     		return;
-
     	if(empty()) {
     		list = heap2.list;
     		tree = heap2.tree;
@@ -258,24 +256,25 @@ public class BinomialHeap
         // In case the second heap has a smaller minimum, it must be prepended
         //     it to our linked list and only add the cdr of the second
         //     heap's linked list to the tree.
-
         if(heap2.list.tree.value < list.tree.value){
-                list = new LinkedList(heap2.list.tree,heap2.list.degree,list);
+                list = new LinkedList(heap2.list.tree, heap2.list.degree,
+				      list);
                 if(heap2.size() > 1)
-                    tree = new Tree(tree, heap2.list.next, heap2.tree);
+                    tree = new Tree(tree, heap2.list.next, heap2.tree,
+				    tree_depth, heap2.tree_depth);
                 else
                     // If heap2.size() == 1 then it has no other elements and
                     //     the tree dosen't need to be enlarged.
                     return;
         }
         else
-                tree = new Tree(tree,heap2.list,heap2.tree);
+	    tree = new Tree(tree, heap2.list, heap2.tree,
+			    tree_depth, heap2.tree_depth);
         
         if(heap2.tree_depth > tree_depth)
     	    tree_depth = heap2.tree_depth;
     	else if(heap2.tree_depth == tree_depth)
     	    tree_depth++;
-
     }
 
    /**
