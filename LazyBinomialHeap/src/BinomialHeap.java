@@ -6,14 +6,47 @@
  */
 public class BinomialHeap
 {
-	private LinkedList list;//linkedlist with Binomialtrees that the heap contains as its values
-	private Tree tree;//Binarytree that saves the linkedlist and tree of the heaps that we meld our heap with.
-	//when operating deleteMin(), we empty the tree and add the contents of the tree to our linkedlist
-	private int size;//saves the number of elements in the heap
-    private int tree_depth;//saves the depth of the tree
+    /*
+     * A rather standard Binomial (min)-Heap implementation. We represent the
+     *     trees as binary trees via the standard isomorphism - a chain
+     *     of BinomialTrees linked by next represent a tree node. This
+     *     representation allows for quick links and spreads. As an
+     *     optimisation, we don't store the depth-zero `subnode' of a node
+     *     of positive depth - this does not affect spreads because the
+     *     spread-node is discarded anyway.
+     *
+     * To allow for constant-time melds, we use a tree which is emptied
+     *     at deleteMin. During meld, we join the other node's tree and
+     *     list with our own tree into a binary tree. In order to keep
+     *     traversal complexity in check, each tree-node must have a nonempty
+     *     list or 2 children - keeping the tree's size under half the heap's.
+     *
+     * Additionally, in order to keep recursion depth in check, when we create
+     *     a tree-node, we put the shorter node on the left. This forces
+     *     each tree of left height $k$ to have at least $2^k$ children,
+     *     obviating us of the need of keeping an explicit recursion stack.
+     *
+     * Finally, to allow for constant-time findMin, the linked list's
+     *     first element contains the heap's minimum.
+     */
+
+        // A linked list containing the heap's subtrees, except for
+        //    the nodes melded before the last deleteMin (that were not
+        //    heap minima immediately after their insertion)
+	private LinkedList list;
+
+        // A binary tree containing the subtrees melded in before the last
+        //    last deleteMin, during which the tree's contents are melded
+        //    onto the linked list.
+	private Tree tree;
+
+        // Contains the number of elements in the heap.
+	private int size;
+
+        // Contains the (binary) tree's left-depth.
+        private int tree_depth;
 
 	private static class BinomialTree {
-		// mid is only important if left == right == null
 		BinomialTree next;
 		BinomialTree child;
 		int value;
@@ -24,6 +57,7 @@ public class BinomialHeap
 			assert(next.value <= child.value);
 			this.child = child;
 		}
+
 		//a leaf/root
 		BinomialTree(int value) {
 			this.next = this.child = null;
@@ -32,22 +66,22 @@ public class BinomialHeap
 	}
 	
 	private static class LinkedList {
-		int degree;//current tree's degree
-		BinomialTree tree;//current element
+		int degree; // tree's degree
+		BinomialTree tree;
 		LinkedList next;
 		
 		LinkedList(BinomialTree tree, int degree, LinkedList next) {
 			// degree should be tree's degree
 			this.degree = degree;
 			this.tree = tree;
-			this.next=next;//changed
+			this.next = next;
 		}
 	}
 	
 	private static class Tree {
-		Tree left;//saves the previous tree
-		LinkedList center;//saves the linkedlist of the heap that we meld with
-		Tree right;//saves the tree of the heap that we meld with
+		Tree left;
+		LinkedList center;
+		Tree right;
 		
 		Tree(Tree left, LinkedList center, Tree right) {
 			this.left = left;
@@ -56,8 +90,6 @@ public class BinomialHeap
 		}
 	}
 	
-	
-
    /**
     * public boolean empty()
     *
@@ -78,17 +110,20 @@ public class BinomialHeap
     * Insert value into the heap
     *
     */
-    public void insert(int value)//mor
-    {//we insert an object to the heap as a Binomial tree of zero degree
-    	BinomialTree t=new BinomialTree(value);
-    	//we update the minimum if the value is lower then the current minimum and add the 
-    	//tree to the linkedlist
-    	if (list.tree.value> value){
-    		list = new LinkedList(t,0,list);
-    	}
-    	else{//we add the tree to the linkedlist
-    		LinkedList l=new LinkedList(t,0,list.next);
-    		list=new LinkedList(list.tree,list.degree,l);
+    public void insert(int value)
+    {
+        // An element is inserted to the heap as a Binomial Tree of 
+        //     degree zero. Because the list's head must contain the heap's
+        //     minimum, the new tree may have to be inserted as the 
+        //     linked list's second element rather than the first.
+
+    	BinomialTree t = new BinomialTree(value);
+
+    	if (list == null || list.tree.value > value)
+    		list = new LinkedList(t, 0, list);
+    	else {
+    		LinkedList l = new LinkedList(t, 0, list.next);
+    		list = new LinkedList(list.tree, list.degree, l);
     	}
     	size++;
     }
@@ -100,7 +135,7 @@ public class BinomialHeap
     * Return the number of linking actions that occured in the process.
     *
     */
-    public int deleteMin()//ariel
+    public int deleteMin()
     {
         int max_deg = 0;
         int link_count = 0;
@@ -198,8 +233,12 @@ public class BinomialHeap
     * Return the minimum value
     *
     */
-    public int findMin()//mor
-    {//we save the minimum as the first value of the first tree in the linkedlist
+    public int findMin()
+    {
+        // The heap's minimum subtree is stored at the linked list's head,
+        //     making retrieval of the minimum easy. Note that this
+        //     NullPointerExceptions on an empty heap - so don't.
+
     	return list.tree.value;
     }
 
@@ -209,29 +248,35 @@ public class BinomialHeap
     * Meld the heap with heap2
     *
     */
-    public void meld (BinomialHeap heap2)//mor-heap2 suppose to be unvalid after meld
-    {//checks if heap2 is empty. if so, doing nothing
+    public void meld (BinomialHeap heap2)
+    {
+        // A few base cases to avoid tree-node proliferation and the
+        //     resulting complexity increase
+
     	if(heap2.empty())
     		return;
-    	//if the current heap is empty, update the heap to heap2
+
     	if(empty()) {
     		list = heap2.list;
     		tree = heap2.tree;
     		return;
     	}
-    	//if the minimum of heap2 is lower then the current minimum we update the new minimum
-    	//and add heap2's linkedlist and tree to the current tree
-    	if(heap2.list.tree.value<list.tree.value){
+
+        // In case the second heap has a smaller minimum, it must be prepended
+        //     it to our linked list and only add the cdr of the second
+        //     heap's linked list to the tree.
+
+    	if(heap2.list.tree.value < list.tree.value){
     		list = new LinkedList(heap2.list.tree,heap2.list.degree,list);
     		tree = new Tree(tree, heap2.list.next, heap2.tree);
-    	}//add heap2's linkedlist and tree to the current tree
+    	}
     	else
     		tree = new Tree(tree,heap2.list,heap2.tree);
-    	//update the new tree_depthe to be the max of the two's tree_depth+1
-    	if(heap2.tree_depth>tree_depth)
-    	    tree_depth=heap2.tree_depth+1;
+    	
+    	if(heap2.tree_depth > tree_depth)
+    	    tree_depth=heap2.tree_depth;
     	else
-    		tree_depth++;
+    	    tree_depth++;
     	size+=heap2.size;
     }
 
@@ -254,16 +299,20 @@ public class BinomialHeap
     * Return the number of linking actions that occurred in the process.
     *
     */
-    public static int sortArray(int[] array)//mor
+    public static int sortArray(int[] array)
     {
     	int count_links = 0;
     	BinomialHeap heap=new BinomialHeap();
-    	//insert all the elements in the array to a new heap
+
+        // A binomial heapsort - like in a standard heapsort, the
+        //     array's elements are inserted into the heap then popped
+        //     one-by-one into the result.
+
     	for(int i=0;i<array.length;i++){
     		heap.insert(array[i]);
     	}
-    	//sort the array by finding the minimum element in the heap and place 
-    	//it in the correct place in the array
+
+
     	for(int i=0;i<array.length;i++){
     		array[i] = heap.findMin();
     		count_links += heap.deleteMin();
