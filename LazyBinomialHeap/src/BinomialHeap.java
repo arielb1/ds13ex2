@@ -24,7 +24,8 @@ public class BinomialHeap
      * Additionally, in order to keep recursion depth in check, when we create
      *     a tree-node, we put the shorter node on the left. This forces
      *     each tree of left height $k$ to have at least $2^k$ children,
-     *     obviating us of the need of keeping an explicit recursion stack.
+     *     bounding the depth of naive recursion and obviating us of
+     *     the need of keeping an explicit stack.
      *
      * Finally, to allow for constant-time findMin, the linked list's
      *     first element contains the heap's minimum.
@@ -69,7 +70,7 @@ public class BinomialHeap
 		int degree; // tree's degree
 		BinomialTree tree;
 		LinkedList next;
-		
+                
 		LinkedList(BinomialTree tree, int degree, LinkedList next) {
 			// degree should be tree's degree
 			this.degree = degree;
@@ -82,11 +83,17 @@ public class BinomialHeap
 		Tree left;
 		LinkedList center;
 		Tree right;
-		
-		Tree(Tree left, LinkedList center, Tree right) {
-			this.left = left;
-			this.center = center;
-			this.right = right;
+
+                Tree(Tree left, LinkedList center, Tree right,
+		     int left_height, int right_height) {
+		    if(left_height < right_height) {
+        		    this.left = left;
+			    this.right = right;
+		    } else {
+			this.left = right;
+			this.right = left;
+		    }
+		    this.center = center;
 		}
 	}
 	
@@ -259,25 +266,33 @@ public class BinomialHeap
     	if(empty()) {
     		list = heap2.list;
     		tree = heap2.tree;
+		size += heap2.size();
     		return;
     	}
+
+        size += heap2.size();
 
         // In case the second heap has a smaller minimum, it must be prepended
         //     it to our linked list and only add the cdr of the second
         //     heap's linked list to the tree.
 
-    	if(heap2.list.tree.value < list.tree.value){
-    		list = new LinkedList(heap2.list.tree,heap2.list.degree,list);
-    		tree = new Tree(tree, heap2.list.next, heap2.tree);
-    	}
-    	else
-    		tree = new Tree(tree,heap2.list,heap2.tree);
-    	
-    	if(heap2.tree_depth > tree_depth)
-    	    tree_depth=heap2.tree_depth;
-    	else
+        if(heap2.list.tree.value < list.tree.value){
+                list = new LinkedList(heap2.list.tree,heap2.list.degree,list);
+                if(heap2.size() > 1)
+                    tree = new Tree(tree, heap2.list.next, heap2.tree);
+                else
+                    // If heap2.size() == 1 then it has no other elements and
+                    //     the tree dosen't need to be enlarged.
+                    return;
+        }
+        else
+                tree = new Tree(tree,heap2.list,heap2.tree);
+        
+        if(heap2.tree_depth > tree_depth)
+    	    tree_depth = heap2.tree_depth;
+    	else if(heap2.tree_depth == tree_depth)
     	    tree_depth++;
-    	size+=heap2.size;
+
     }
 
    /**
