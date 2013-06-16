@@ -144,26 +144,42 @@ public class BinomialHeap
     */
     public int deleteMin()
     {
-        int max_deg = 0;
-        int link_count = 0;
+	// In all functions below, target[i] contains the subtree of
+        //     degree i.
         size--;
-        for(int s=size;s>0;s = s >> 2) max_deg++;
-        BinomialTree[] target = new BinomialTree[max_deg];
+
+        int link_count = 0;
+        BinomialTree[] target = new BinomialTree[subtree_array_size()];
         
+        // Spread the children of the removed tree
         BinomialTree cur = list.tree;
         for(int deg=list.degree;deg>0;deg--,cur=cur.next)
             target[deg-1] = cur.child;
-        assert(cur == null);
+	assert(list.degree == 0 || cur == null);
 
+        // Link the other nodes
         link_count += link_list(target, list.next);
         link_count += link_tree(target, tree);
 
+        // Collect the linked trees and regenerate the list        
         tree = null;
         tree_depth = 0;
         list = collect_target(target);
-     	return link_count;
+
+        return link_count;
     }
 
+    // Returns one plus the degree of the largest subtree of the heap
+    //     after linkage - one plus the floor of the base 2 logarithm
+    //     of its size.
+    private int subtree_array_size() {
+        int result = 0;
+        for(int s=size(); s > 0; s = s >> 1) result++;
+
+        return result;
+    }
+
+    // Link the trees inside list into target
     private int link_list(BinomialTree[] target, LinkedList list) {
         int link_count = 0;
 
@@ -183,6 +199,7 @@ public class BinomialHeap
         return link_count;
     }
 
+    // Links the binomial trees inside the binary tree tree into target
     private int link_tree(BinomialTree[] target, Tree tree) {
         int link_count = 0;
 
@@ -194,26 +211,33 @@ public class BinomialHeap
         return link_count;
     }
 
+    // Collects the passed array into a linked list,
+    //     putting the minimum at its head.
     private LinkedList collect_target(BinomialTree[] target) {
-        BinomialTree min_tree = null;
-        int min_deg = -1;
+        BinomialTree min_tree;
+        int min_deg;
         LinkedList list = null;
-        for(int deg=0;deg<target.length;deg++) {
+        
+        // Find the first non-null element of target
+        for(min_deg=0;min_deg < target.length && target[min_deg] == null;
+            min_deg++);
+        if(min_deg == target.length) return null;
+        min_tree = target[min_deg];
+        
+	// cons up the rest of target
+        for(int deg=min_deg+1;deg<target.length;deg++) {
             BinomialTree t = target[deg];
             if(t == null) continue;
-            if(min_tree == null) {
-                min_tree = t;
-                min_deg = deg;
-            } else if(t.value < min_tree.value) {
+
+            if(t.value < min_tree.value) {
                 list = new LinkedList(min_tree, min_deg, list);
                 min_tree = t;
                 min_deg = deg;
             } else list = new LinkedList(t, deg, list);
         }
 
-        if(min_tree != null)
-            list = new LinkedList(min_tree, min_deg, list);
-
+        // Add the minimum to the front
+        list = new LinkedList(min_tree, min_deg, list);
         return list;
     }
 
@@ -229,7 +253,7 @@ public class BinomialHeap
         //     making retrieval of the minimum easy. Note that this
         //     NullPointerExceptions on an empty heap - so don't.
 
-    	return list.tree.value;
+        return list.tree.value;
     }
 
    /**
@@ -242,14 +266,14 @@ public class BinomialHeap
     {
         // A few base cases to avoid tree-node proliferation and the
         //     resulting complexity increase
-    	if(heap2.empty())
-    		return;
-    	if(empty()) {
-    		list = heap2.list;
-    		tree = heap2.tree;
-		size += heap2.size();
-    		return;
-    	}
+        if(heap2.empty())
+                return;
+        if(empty()) {
+                list = heap2.list;
+                tree = heap2.tree;
+                size += heap2.size();
+                return;
+        }
 
         size += heap2.size();
 
@@ -258,23 +282,23 @@ public class BinomialHeap
         //     heap's linked list to the tree.
         if(heap2.list.tree.value < list.tree.value){
                 list = new LinkedList(heap2.list.tree, heap2.list.degree,
-				      list);
+                                      list);
                 if(heap2.size() > 1)
                     tree = new Tree(tree, heap2.list.next, heap2.tree,
-				    tree_depth, heap2.tree_depth);
+                                    tree_depth, heap2.tree_depth);
                 else
                     // If heap2.size() == 1 then it has no other elements and
                     //     the tree dosen't need to be enlarged.
                     return;
         }
         else
-	    tree = new Tree(tree, heap2.list, heap2.tree,
-			    tree_depth, heap2.tree_depth);
+            tree = new Tree(tree, heap2.list, heap2.tree,
+                            tree_depth, heap2.tree_depth);
         
         if(heap2.tree_depth > tree_depth)
-    	    tree_depth = heap2.tree_depth;
-    	else if(heap2.tree_depth == tree_depth)
-    	    tree_depth++;
+            tree_depth = heap2.tree_depth;
+        else if(heap2.tree_depth == tree_depth)
+            tree_depth++;
     }
 
    /**
