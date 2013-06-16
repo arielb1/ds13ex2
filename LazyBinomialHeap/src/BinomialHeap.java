@@ -205,7 +205,7 @@ public class BinomialHeap
     * Meld the heap with heap2
     *
     */
-    public void meld (BinomialHeap heap2)//mor-heap2 supposse to be unvalid after meld+tree_depth
+    public void meld (BinomialHeap heap2)//mor-heap2 supposse to be unvalid after meld
     {
     	if(heap2.list.tree.value<list.tree.value){
     		list=new LinkedList(heap2.list.tree,heap2.list.degree,list);
@@ -213,7 +213,12 @@ public class BinomialHeap
     		heap2.list=new LinkedList(t,heap2.list.next.degree,heap2.list.next.next);
     	}
     	tree=new Tree(tree,heap2.list,heap2.tree);
-    	tree_depth++;
+    	if(heap2.tree_depth>tree_depth){
+    	tree_depth=heap2.tree_depth+1;
+    	}
+    	else{
+    		tree_depth++;
+    	}
     	size+=heap2.size;
     }
 
@@ -238,11 +243,14 @@ public class BinomialHeap
     */
     public static int sortArray(int[] array)//mor
     {
-    	Binomialheap 
+    	BinomialHeap Bheap=new BinomialHeap();
     	for(int i=0;i<array.length;i++){
-    		
+    		Bheap.insert(array[i]);
     	}
-        return 42; //	 to be replaced by student code
+    	for(int i=0;i<array.length;i++){
+    		array[i]=Bheap.deleteMin();
+    	}
+        return Bheap.count_links; 
     }
 
    /**
