@@ -107,7 +107,7 @@ public class BinomialHeap
         BinomialTree[] target = new BinomialTree[max_deg];
         
         BinomialTree cur = list.tree;
-        for(int deg=tree.degree;deg>0;deg--,cur=cur.next)
+        for(int deg=list.degree;deg>0;deg--,cur=cur.next)
             target[deg-1] = cur.child;
         assert(cur == null);
 
@@ -181,7 +181,7 @@ public class BinomialHeap
                 list = new LinkedList(min_tree, min_deg, list);
                 min_tree = t;
                 min_deg = deg;
-            } else list = new LinkedList(tree, deg, list);
+            } else list = new LinkedList(t, deg, list);
         }
 
         if(min_tree != null)
