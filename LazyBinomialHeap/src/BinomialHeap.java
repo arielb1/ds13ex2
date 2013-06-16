@@ -9,7 +9,6 @@ public class BinomialHeap
 	private LinkedList list;
 	private Tree tree;
 	private int size;
-	private int count_links;
     private int tree_depth;
 
 	private static class BinomialTree {
@@ -207,20 +206,28 @@ public class BinomialHeap
     * Meld the heap with heap2
     *
     */
-    public void meld (BinomialHeap heap2)//mor-heap2 supposse to be unvalid after meld
+    public void meld (BinomialHeap heap2)//mor-heap2 suppose to be unvalid after meld
     {
+    	if(heap2.empty())
+    		return;
+    	
+    	if(empty()) {
+    		list = heap2.list;
+    		tree = heap2.tree;
+    		return;
+    	}
+    	
     	if(heap2.list.tree.value<list.tree.value){
-    		list=new LinkedList(heap2.list.tree,heap2.list.degree,list);
-    		BinomialTree t=heap2.list.next.tree;
-    		heap2.list=new LinkedList(t,heap2.list.next.degree,heap2.list.next.next);
+    		list = new LinkedList(heap2.list.tree,heap2.list.degree,list);
+    		tree = new Tree(tree, heap2.list.next, heap2.tree);
     	}
-    	tree=new Tree(tree,heap2.list,heap2.tree);
-    	if(heap2.tree_depth>tree_depth){
-    	tree_depth=heap2.tree_depth+1;
-    	}
-    	else{
+    	else
+    		tree = new Tree(tree,heap2.list,heap2.tree);
+    	
+    	if(heap2.tree_depth>tree_depth)
+    	    tree_depth=heap2.tree_depth+1;
+    	else
     		tree_depth++;
-    	}
     	size+=heap2.size;
     }
 
@@ -245,14 +252,18 @@ public class BinomialHeap
     */
     public static int sortArray(int[] array)//mor
     {
-    	BinomialHeap Bheap=new BinomialHeap();
+    	int count_links = 0;
+    	BinomialHeap heap=new BinomialHeap();
     	for(int i=0;i<array.length;i++){
-    		Bheap.insert(array[i]);
+    		heap.insert(array[i]);
     	}
+    	
     	for(int i=0;i<array.length;i++){
-    		array[i]=Bheap.deleteMin();
+    		array[i] = heap.findMin();
+    		count_links += heap.deleteMin();
     	}
-        return Bheap.count_links; 
+    	
+        return count_links; 
     }
 
    /**
