@@ -11,6 +11,7 @@ public class FuzzTester {
     int m_index;
     static final int ARRAY_SIZE = 1000000;
     static final int LARGEST = 100000;
+    static boolean debug = false;
 
     public FuzzTester(int run_length, Random rand) {
         m_run_length = run_length;
@@ -27,27 +28,31 @@ public class FuzzTester {
 
     public void insert() {
         int next = m_rand.nextInt(LARGEST);
-        System.err.println("insert " + next);
+        if(debug)
+            System.err.println("insert " + next);
         m_heaps[m_index - 1].insert(next);
         m_queues[m_index - 1].add(next);
     }
 
     public void delete() {
         int last = m_queues[m_index - 1].poll();
-        System.err.println("delete " + last);
+        if(debug)
+            System.err.println("delete " + last);
         assert(last == m_heaps[m_index - 1].findMin());
         m_heaps[m_index - 1].deleteMin();
     }
 
     public void push() {
-        System.err.println("push");
+        if(debug)
+            System.err.println("push");
         m_queues[m_index] = new PriorityQueue<Integer>();
         m_heaps[m_index] = new BinomialHeap();
         m_index++;
     }
 
     public void pop() {
-        System.err.println("pop");
+        if(debug)
+            System.err.println("pop");
         m_index--;
         m_queues[m_index - 1].addAll(m_queues[m_index]);
         m_heaps[m_index - 1].meld(m_heaps[m_index]);
@@ -71,7 +76,7 @@ public class FuzzTester {
                 }
             }
 
-            while(m_index > 0) pop();
+            while(m_index > 1) pop();
             while(last_size() > 0) delete();
         } catch(Exception e) {
             System.out.println(m_id + ": failed at command #" + i);
@@ -81,12 +86,13 @@ public class FuzzTester {
 
     public static void main(String[] args) throws Exception {
         if(args.length == 0) {
-            System.err.println("usage: FuzzTester RUNLENGTH NRUNS SEED");
+            System.err.println("usage: FuzzTester RUNLENGTH NRUNS SEED [debug]");
         }
 
         int run_length = Integer.parseInt(args[0]);
         int count_runs = Integer.parseInt(args[1]);
         long seed = Long.parseLong(args[2]);
+        debug = args.length == 4 && args[3] == "debug";
         
         FuzzTester fuzzer = new FuzzTester(run_length, new Random(seed));
 
