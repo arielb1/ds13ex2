@@ -55,7 +55,7 @@ public class BinomialHeap
 		int value;
 
 		BinomialTree(BinomialTree next, BinomialTree child) {
-			this.next = next.next == null ? null : next;
+			this.next = next.child == null ? null : next;
 			this.value = next.value;
 			assert(next.value <= child.value);
 			this.child = child;
@@ -155,78 +155,78 @@ public class BinomialHeap
 
 		// Spread the children of the removed tree
 		BinomialTree cur = list.tree;
-		for(int deg=list.degree;deg>0;deg--,cur=cur.next)
-			target[deg-1] = cur.child;
-		assert(list.degree == 0 || cur == null);
+                for(int deg=list.degree;deg>0;deg--,cur=cur.next)
+		    target[deg-1] = cur.child;
+                assert(list.degree == 0 || cur == null);
 
-		// Link the other nodes
-		link_count += link_list(target, list.next);
-		link_count += link_tree(target, tree);
+                // Link the other nodes
+                link_count += link_list(target, list.next);
+                link_count += link_tree(target, tree);
 
-		// Collect the linked trees and regenerate the list        
-		tree = null;
-		tree_depth = 0;
-		list = collect_target(target);
+                // Collect the linked trees and regenerate the list        
+                tree = null;
+                tree_depth = 0;
+                list = collect_target(target);
 
-		return link_count;
-	}
+                return link_count;
+        }
 
-	// Returns one plus the degree of the largest subtree of the heap
-	//     after linkage - one plus the floor of the base 2 logarithm
-	//     of its size.
-	private int subtree_array_size() {
-		int result = 0;
-		for(int s=size(); s > 0; s = s >> 1) result++;
+        // Returns one plus the degree of the largest subtree of the heap
+        //     after linkage - one plus the floor of the base 2 logarithm
+        //     of its size.
+        private int subtree_array_size() {
+                int result = 0;
+                for(int s=size(); s > 0; s = s >> 1) result++;
 
-		return result;
-	}
+                return result;
+        }
 
-	// Link the trees inside list into target
-	private int link_list(BinomialTree[] target, LinkedList list) {
-		int link_count = 0;
+        // Link the trees inside list into target
+        private int link_list(BinomialTree[] target, LinkedList list) {
+                int link_count = 0;
 
-		while(list != null) {
-			BinomialTree cur = list.tree;
-			int deg;
+                while(list != null) {
+                        BinomialTree cur = list.tree;
+                        int deg;
 
-			for(deg = list.degree; target[deg] != null; deg++) {
-				link_count++;
+                        for(deg = list.degree; target[deg] != null; deg++) {
+                                link_count++;
 
-				BinomialTree old = target[deg];
-				cur = (cur.value > old.value) ?
-						new BinomialTree(old, cur) :
-							new BinomialTree(cur, old);
-						target[deg] = null;
-			}
+                                BinomialTree old = target[deg];
+                                cur = (cur.value > old.value) ?
+                                                new BinomialTree(old, cur) :
+                                                new BinomialTree(cur, old);
+                                target[deg] = null;
+                        }
 
-			target[deg] = cur;
-			list = list.next;
-		}
+                        target[deg] = cur;
+                        list = list.next;
+                }
 
-		return link_count;
-	}
+                return link_count;
+        }
 
-	// Links the binomial trees inside the binary tree tree into target
-	private int link_tree(BinomialTree[] target, Tree tree) {
-		int link_count = 0;
+        // Links the binomial trees inside the binary tree tree into target
+        private int link_tree(BinomialTree[] target, Tree tree) {
+                int link_count = 0;
 
-		for(Tree cur = tree; cur != null; cur = cur.right) {
-			link_count += link_tree(target, cur.left);
-			link_count += link_list(target, cur.center);
-		}
+                for(Tree cur = tree; cur != null; cur = cur.right) {
+                        link_count += link_tree(target, cur.left);
+                        link_count += link_list(target, cur.center);
+                }
 
-		return link_count;
-	}
+                return link_count;
+        }
 
-	// Collects the passed array into a linked list,
-	//     putting the minimum at its head.
-	private LinkedList collect_target(BinomialTree[] target) {
-		BinomialTree min_tree;
-		int min_deg;
-		LinkedList list = null;
+        // Collects the passed array into a linked list,
+        //     putting the minimum at its head.
+        private LinkedList collect_target(BinomialTree[] target) {
+                BinomialTree min_tree;
+                int min_deg;
+                LinkedList list = null;
 
-		// Find the first non-null element of target
-		for(min_deg=0;min_deg < target.length && target[min_deg] == null;
+                // Find the first non-null element of target
+                for(min_deg=0;min_deg < target.length && target[min_deg] == null;
 				min_deg++);
 		if(min_deg == target.length) return null;
 		min_tree = target[min_deg];
