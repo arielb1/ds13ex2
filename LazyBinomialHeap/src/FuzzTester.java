@@ -60,6 +60,9 @@ public class FuzzTester {
 
     public void fuzz() throws Exception {
         int i=0;
+        m_index = 0;
+        int max_height = 0;
+        int max_size = 0;
         try {
             for(;i<m_run_length;i++) {
                 if(m_index == 0 || m_rand.nextInt(4) == 0) {
@@ -74,25 +77,34 @@ public class FuzzTester {
                         delete();
                     else for(int j=0;j < 5;j++) delete();
                 }
+                if(last_size() > max_size) max_size = last_size();
+                if(m_index > max_height) max_height = m_index;
             }
 
             while(m_index > 1) pop();
             while(last_size() > 0) delete();
+            for(int j=0; i<max_height; j++) {
+		m_heaps[j] = null;
+		m_queues[j] = null;
+	    }
         } catch(Exception e) {
             System.out.println(m_id + ": failed at command #" + i);
             throw e;
         }
+        System.out.println(m_id + ": got to size " + max_size + " and height "
+			   + max_height);
     }
 
     public static void main(String[] args) throws Exception {
         if(args.length == 0) {
-            System.err.println("usage: FuzzTester RUNLENGTH NRUNS SEED [debug]");
+            System.err.println("usage: FuzzTester RUNLENGTH NRUNS SEED BUNDLE [debug]");
         }
 
         int run_length = Integer.parseInt(args[0]);
         int count_runs = Integer.parseInt(args[1]);
         long seed = Long.parseLong(args[2]);
-        debug = args.length == 4 && args[3] == "debug";
+        int bundle = Integer.parseInt(args[3]);
+        debug = args.length == 5 && args[4] == "debug";
         
         FuzzTester fuzzer = new FuzzTester(run_length, new Random(seed));
 
@@ -103,7 +115,8 @@ public class FuzzTester {
             fuzzer.setId(id);
 
             Date before = new Date();
-            fuzzer.fuzz();
+            for(int j=0;j<bundle;j++)
+                fuzzer.fuzz();
             Date after = new Date();
 
             System.out.println(id + ": succeeded. Took " +
