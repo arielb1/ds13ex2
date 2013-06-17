@@ -11,7 +11,7 @@ public class BinomialHeap
 	 *     trees as binary trees via the standard isomorphism - a chain
 	 *     of BinomialTrees linked by next represent a tree node. This
 	 *     representation allows for quick links and spreads. As an
-	 *     optimisation, we don't store the depth-zero `subnode' of a node
+	 *     optimization, we don't store the depth-zero `subnode' of a node
 	 *     of positive depth - this does not affect spreads because the
 	 *     spread-node is discarded anyway.
 	 *

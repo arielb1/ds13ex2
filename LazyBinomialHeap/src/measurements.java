@@ -19,33 +19,33 @@ public class measurements {
 			double[] dArray=new double[4];
 			dArray[0]=m;
 			for(int i=1;i<4;i++){
-				dArray[i]=array[i]/10;//is it really a double
+				dArray[i]=((double)array[i])/10;//is it really a double
 			}
 			resultArray[m/10000]=dArray;
 		}
 		for(int i=0; i<10;i++){
-		System.out.println(resultArray[i]);
+			System.out.println(resultArray[i]);
 		}
 	}
 
-		private static int[] measure(int m){
-			Random generator=new Random();
-			int [] resultsArray=new int[4];
-			resultsArray[0]=m;
-			int[] array=new int[m];
-			for(int i=0;i<m;i++){
-				array[i]=generator.nextInt(100000);
-			}
-			resultsArray[1]=sortArray(array);//don't know how to call it
-			resultsArray[2]=sortArray(array);
-			BinomialHeap heap=new BinomialHeap();
-			for(int i=0;i<array.length;i++){
-				heap.insert(array[i]);
-			}
-			for(int i=array.length-1;i>0;i--){
-				array[i] = heap.findMin();
-			}
-			resultsArray[3]=sortArray(array);
-			return resultsArray;
+	private static int[] measure(int m){
+		Random generator=new Random();
+		int [] resultsArray=new int[4];
+		resultsArray[0]=m;
+		int[] array=new int[m];
+		for(int i=0;i<m;i++){
+			array[i]=generator.nextInt(100000);
 		}
+		resultsArray[1]=BinomialHeap.sortArray(array);//don't know how to call it
+		resultsArray[2]=BinomialHeap.sortArray(array);
+		BinomialHeap heap=new BinomialHeap();
+		for(int i=0;i<array.length;i++){
+			heap.insert(array[i]);
+		}
+		for(int i=array.length-1;i>=0;i--){
+			array[i] = heap.findMin();
+		}
+		resultsArray[3]=BinomialHeap.sortArray(array);
+		return resultsArray;
+	}
 }
