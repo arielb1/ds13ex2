@@ -46,6 +46,7 @@ public class measurements {
 		}
 		for(int i=array.length-1;i>=0;i--){
 			array[i] = heap.findMin();
+			heap.deleteMin();
 		}
 		resultsArray[3]=BinomialHeap.sortArray(array);
 		return resultsArray;
