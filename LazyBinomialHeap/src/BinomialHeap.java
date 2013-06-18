@@ -363,7 +363,7 @@ public class BinomialHeap
 	ranks_list(target, list);
 	int sum = 0;
 	for(int i : target) sum += i;
-	int result = new int[sum];
+	int[] result = new int[sum];
 	int j = 0;
 	for(int i=0; i<target.length; i++) {
 	    int bound = j + target[i];
