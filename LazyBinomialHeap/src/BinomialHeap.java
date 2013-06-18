@@ -141,7 +141,7 @@ public class BinomialHeap
      * public void deleteMin()
      *
      * Delete the minimum value.
-     * Return the number of linking actions that occured in the process.
+     * Return the number of linking actions that occurred in the process.
      *
      */
     public int deleteMin()
