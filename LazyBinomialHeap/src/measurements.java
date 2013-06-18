@@ -21,10 +21,12 @@ public class measurements {
 			for(int i=1;i<4;i++){
 				dArray[i]=((double)array[i])/10;//is it really a double
 			}
-			resultArray[m/10000]=dArray;
+			resultArray[m/10000-1]=dArray;
 		}
 		for(int i=0; i<10;i++){
-			System.out.println(resultArray[i]);
+			for(int j=0;j<4;j++){
+				System.out.println(resultArray[i][j]);
+			}
 		}
 	}
 
