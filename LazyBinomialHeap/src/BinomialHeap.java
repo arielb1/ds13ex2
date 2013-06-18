@@ -381,9 +381,9 @@ public class BinomialHeap
 
     // Adds the ranks of the passed-in tree to the array
     private void ranks_tree(int[] target, Tree tr) {
-	for(;tr != null; tr = tr.right} {
-            ranks_tree(tr.left);
-            ranks_list(tr.center);
+	    for(;tr != null; tr = tr.right) {
+            ranks_tree(target, tr.left);
+            ranks_list(target, tr.center);
         }
     }
 
